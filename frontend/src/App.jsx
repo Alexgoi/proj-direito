@@ -1,28 +1,23 @@
-import {useState, useEffect, use} from 'react';
-import axios from 'axios';
+import { Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';   // Importa nosso menu
+import HomePage from './pages/HomePage';   // Importa nossa nova página de início
+import DashboardPage from './pages/DashboardPage';
 import './App.css';
 
-export default function App() {
-  const [message, setMessage] = useState('Carregando...');
-
-  useEffect(() => {
-    axios.get('http://localhost:3000/api/test')
-      .then(reponse => {
-        setMessage(reponse.data.message);
-      })
-      .catch(error => {
-        console.error("Erro a conectar com o backend:", error);
-        setMessage('Falha ao conectar com o backend!');
-      });
-    });
+function App() {
   return (
-    <>
-      <h1>Projeto Advocacia</h1>
-      <div className="card">
-        <p>
-          Status da conexão: <strong>{message}</strong>
-        </p>
-      </div>
-    </>
+    <div className="App">
+      <Navbar />
+      <hr />
+      {/* A área principal que mudará de acordo com a URL */}
+      <main>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/dashboard" element={<DashboardPage />} /> 
+        </Routes>
+      </main>
+    </div>
   );
 }
+
+export default App;
