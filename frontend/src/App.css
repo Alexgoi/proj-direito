@@ -146,3 +146,15 @@ main {
 .auth-switch-link a {
   font-weight: bold;
 }
+
+.logout-button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.logout-button:hover {
+  background-color: #5a6268;
+}

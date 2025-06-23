@@ -1,33 +1,36 @@
-.navbar{
-    background-color: #282c34;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;    
+/* frontend/src/components/Navbar.css (VERSÃO CORRIGIDA) */
+
+.navbar {
+  /* Removemos o padding daqui para a lista <ul> ter controle total */
+  background-color: #282c34;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* O box-sizing garante que o padding não afete a largura total */
+  box-sizing: border-box; 
 }
 
-.navbar ul{
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    gap: 30px;
+.navbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 1rem 2rem; /* Adicionamos o espaçamento lateral AQUI */
+  display: flex;
+  align-items: center; /* Alinha todos os itens verticalmente no centro */
+  gap: 30px;
 }
 
-.navbar a{
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 1.1rem;
-    padding: 8px 15px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  white-space: nowrap; /* Impede que o texto quebre a linha */
 }
 
-.navbar a:hover{
-    background-color: #4a505c;
+.navbar a:hover {
+  background-color: #4a505c;
 }
