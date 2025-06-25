@@ -158,3 +158,10 @@ main {
 .logout-button:hover {
   background-color: #5a6268;
 }
+
+.sync-container {
+  background-color: #2c2c2e;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}

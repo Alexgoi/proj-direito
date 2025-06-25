@@ -1,31 +1,63 @@
 // backend/routes/pje.js
+console.log('--- EXECUTANDO O ARQUIVO NOVO DO PJE.JS');
+
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const db = require('../db');
+const verifyToken = require('../middleware/verifyToken');
 
-router.get('/sincronizar', async (req, res) => {
-  console.log('Recebida requisição para sincronizar com PJe...');
-  let itemsDaApi;
-  try {
-    const nomeAdvogado = 'Tatiana Lima da Silva';
-    const response = await axios.get(process.env.PJE_API_URL, {
-      params: { homeAdvogado: nomeAdvogado }
-    });
-    itemsDaApi = response.data.items;
-    console.log(`${itemsDaApi.length} comunicações recebidas do PJe.`);
-  } catch (apiError) {
-    console.error("Erro ao chamar a API do PJe:", apiError.message);
-    return res.status(500).json({ error: 'Falha ao se comunicar com o serviço do PJe.' });
+router.get('/sincronizar', verifyToken, async (req, res) => {
+  const {nome} = req.user;
+  if(!nome){
+    return res.status(400).json({error: 'Usuário não possui OAB/UF cadastrados para a sincronização'});
   }
+  console.log(`Requisio de sincronização recebida para o usuário: ${req.user.nome}  ${req.user.oab}`);
+  
+  try{
+    let todosOsItens = [];
+    let paginaAtual = 1;
+    let aindaHaPaginas = true;
+    const itensPorPagina = 100;
 
-  try {
+    do{
+      console.log(`Buscando página ${paginaAtual}...`);
+      const response = await axios.get(process.env.PJE_API_URL,{
+        params: {
+          nomeAdvogado: nome,
+          pagina: paginaAtual,
+          itensPorPagina: itensPorPagina,
+
+          dataDisponibilizacaoInicio: '2010-01-01',
+          dataDisponibilizacaoFim: '2099-12-31'
+        }
+      });
+
+      const dadosDaPagina = response.data;
+      if(!dadosDaPagina || !dadosDaPagina.items){
+        throw new Error('Resposta da API do PJe em formato inesperado.');
+      }
+
+      const itensRecebidos = dadosDaPagina.items;
+      if (itensRecebidos.length > 0) {
+        todosOsItens.push(...itensRecebidos);
+        if(itensRecebidos.length < itensPorPagina){
+          aindaHaPaginas = false;
+        }else {
+          paginaAtual++;
+        }
+      } else{
+        aindaHaPaginas = false;
+      }
+    } while (aindaHaPaginas);
+    console.log(`Busca na API concluida. Total de ${todosOsItens.length} itens encontrados. Procesando e salvando no banco...`);
+  
     let processosNovos = 0;
     let processosAtualizados = 0;
 
-    for (const item of itemsDaApi) {
+    for(const item of todosOsItens){
       const numeroProcesso = item.numero_processo;
-      if (!numeroProcesso) continue;
+      if(!numeroProcesso) continue;
 
       const autores = item.destinatarios.filter(d => d.polo === 'A').map(d => d.nome).join(' & ');
       const reus = item.destinatarios.filter(d => d.polo === 'P').map(d => d.nome).join(' & ');
@@ -36,49 +68,32 @@ router.get('/sincronizar', async (req, res) => {
         [numeroProcesso]
       );
 
-      if (processoExistente.rows.length > 0) {
-        // Se o processo já existe, ATUALIZAMOS com as novas informações
+      if (processoExistente.rows.length > 0){
         await db.query(
-          `UPDATE dbadv.processos 
-           SET parte_autora = $1, parte_re = $2, data_ultimo_movimento = $3
-           WHERE numero_processo_cnj = $4`,
-          [
-            autores || 'Autor não identificado', 
-            reus || 'Réu não identificado',
-            dataMovimento,
-            numeroProcesso
-          ]
+          `UPDATE dbadv.processos SET parte_autora = $1, parte_re = $2, data_ultimo_movimento = $3, titulo = $4 WHERE numero_processo_cnj = $5`,
+          [autores || 'Autor não identifado', reus || 'Réu não identificado', dataMovimento, item.nomeClasse, numeroProcesso]
+
         );
         processosAtualizados++;
-      } else {
-        // Se não existe, INSERIMOS
+      } else{
         await db.query(
-          `INSERT INTO dbadv.processos (numero_processo_cnj, titulo, data_inicio, parte_autora, parte_re, data_ultimo_movimento)
-           VALUES ($1, $2, $3, $4, $5, $6)`,
-          [
-            numeroProcesso, 
-            item.nomeClasse, 
-            dataMovimento,
-            autores || 'Autor não identificado',
-            reus || 'Réu não identificado',
-            dataMovimento
-          ]
+          `INSERT INTO dbadv.processos (numero_processo_cnj, titulo, data_inicio, parte_autora, parte_re, data_ultimo_movimento) VALUES ($1, $2, $3, $4, $5, $6)`,
+          [numeroProcesso, item.nomeClasse, dataMovimento, autores || 'Autor não identificado', reus || 'Réu não identificado', dataMovimento]
+
         );
         processosNovos++;
       }
-    }
-
+    } 
     res.status(200).json({
-      message: 'Sincronização concluída com sucesso!',
-      totalItemsRecebidos: itemsDaApi.length,
+      message: `Sincronização concluída! Total de ${todosOsItens.length} itens processados`,
       processosNovosAdicionados: processosNovos,
       processosAtualizados: processosAtualizados,
     });
-
-  } catch (dbError) {
-    console.error("Erro ao salvar dados no banco:", dbError);
-    res.status(500).json({ error: 'Falha ao processar ou salvar dados do PJe' });
+  } catch (error){
+    console.error("Erro durante a sincronização paginada: ", error.response?.data || error.message);
+    res.status(500).json({error: 'Falha na sincronização paginada com o Pje.'})
   }
 });
+
 
 module.exports = router;

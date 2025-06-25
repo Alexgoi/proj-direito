@@ -1,6 +1,6 @@
 // frontend/src/pages/ClientsPage.jsx
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/axiosConfig.js';
 import AddClientForm from '../components/AddClientForm';
 
 function ClientsPage() {
@@ -9,7 +9,7 @@ function ClientsPage() {
   // ... (outros estados como 'error' se desejar)
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/clientes')
+    api.get('http://localhost:3000/api/clientes')
       .then(response => {
         setClients(response.data);
         setLoading(false);

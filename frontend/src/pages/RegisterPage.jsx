@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import '../App.css'; 
+import api from '../api/axiosConfig';
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ function RegisterPage() {
     setError(null);
 
     try {
-      await axios.post('http://localhost:3000/api/auth/registrar', formData);
+      await api.post('http://localhost:3000/api/auth/registrar', formData);
       
       alert('Usuário registrado com sucesso! Você será redirecionado para a página de login.');
       navigate('/login');

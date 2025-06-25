@@ -1,12 +1,12 @@
 import {useState, useEffect } from 'react';
-import axios from 'axios';
 import '../App.css';
+import api from '../api/axiosConfig';
 
 function HomePage() {
   const [message, setMessage] = useState('Carregando...');
    
   useEffect(() => {
-    axios.get('http://localhost:3000/api/test')
+    api.get('http://localhost:3000/api/test')
       .then(reponse => {
         setMessage(reponse.data.message);
       })

@@ -1,10 +1,13 @@
 // backend/routes/auth.js
+require('dotenv').config();
 
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+
+const HARDCODED_SECRET = 'este-e-um-segredo-de-teste-muito-seguro-e-sem-erros';
 
 // --- ROTA DE REGISTRO ---
 // POST /api/auth/registrar
@@ -16,7 +19,7 @@ router.post('/registrar', async (req, res) => {
   }
 
   try {
-    // Gera um "sal" e cria o hash da senha
+    // Gera um "salt" e cria o hash da senha
     const salt = await bcrypt.genSalt(10);
     const senhaHash = await bcrypt.hash(senha, salt);
 
@@ -69,6 +72,7 @@ router.post('/login', async (req, res) => {
       uf_oab: usuario.uf_oab
     };
 
+    //linha que estava usando antes de debugar o erro
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '8h' });
 
     res.status(200).json({ message: 'Login bem-sucedido!', token });
