@@ -8,6 +8,7 @@ import ClientsPage from './pages/ClientsPage';
 import ProcessosPage from './pages/ProcessosPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage'; // Garanta que esta importação existe
+import CalculadoraPage from './pages/CalculadoraPage';
 import './App.css';
 
 function App() {
@@ -29,6 +30,10 @@ function App() {
           <Route 
             path="/processos" 
             element={<ProtectedRoute><ProcessosPage /></ProtectedRoute>} 
+          />
+          <Route
+            path="/calculadora"
+            element={<ProtectedRoute><CalculadoraPage /></ProtectedRoute>}
           />
         </Routes>
       </main>

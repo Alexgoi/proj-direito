@@ -22,6 +22,7 @@ function Navbar() {
         {/* Mostra o link do Dashboard apenas se o usuário estiver logado */}
         {user && <li><Link to="/clientes">Clientes</Link></li>}
         {user && <li><Link to="/processos">Processos</Link></li>}
+        {user && <li><Link to="/calculadora">Calculadora</Link></li>}
 
         {/* Usamos um operador ternário para mudar o final do menu */}
         {user ? (

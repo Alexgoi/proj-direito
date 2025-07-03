@@ -165,3 +165,56 @@ main {
   border-radius: 8px;
   margin-bottom: 1rem;
 }
+
+/* frontend/src/App.css */
+
+/* ... (seus outros estilos) ... */
+
+.itens-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.itens-header h3 {
+  margin: 0;
+}
+
+.itens-header span {
+  font-weight: bold;
+  background-color: #3a3a3c;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+/* frontend/src/App.css */
+.cota-item {
+  display: grid;
+  /* Agora temos 6 colunas: Rótulo, Descrição, Valor, Qtde, Data, Botão */
+  grid-template-columns: auto 2fr 1fr 80px 1fr auto; 
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+.item-number {
+  font-weight: bold;
+  text-align: right; /* Alinha o "Item X:" à direita para ficar perto do input */
+}
+
+/* Adicione estas classes também para os novos botões */
+.remove-button, .add-button {
+  padding: 10px;
+  border: 1px solid #555;
+  border-radius: 5px;
+  background-color: #444;
+  color: white;
+  cursor: pointer;
+}
+.remove-button {
+  background-color: #6e3b3b;
+}
+.add-button {
+  background-color: #3b6e4d;
+  font-weight: bold;
+}

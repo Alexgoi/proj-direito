@@ -19,12 +19,14 @@ const clienteRoutes = require('./routes/clientes');
 const pjeRoutes = require('./routes/pje');
 const processoRoutes = require('./routes/processos');
 const authRotes = require('./routes/auth');
+const indicesRoutes = require('./routes/indices');
 
 // USO DAS ROTAS
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/pje', pjeRoutes);
 app.use('/api/processos', processoRoutes);
 app.use('/api/auth', authRotes);
+app.use('/api/indices', indicesRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
